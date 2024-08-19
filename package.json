@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "start": "rw dev"
+    "start": "rw dev",
+    "db:init": "./scripts/local_db.sh"
   },
   "private": true,
   "workspaces": {

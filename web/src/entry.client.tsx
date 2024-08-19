@@ -1,6 +1,7 @@
 import { hydrateRoot, createRoot } from 'react-dom/client'
 
 import App from './App'
+import { Document } from './Document'
 import Routes from './Routes'
 
 /**
@@ -20,16 +21,20 @@ if (!redwoodAppElement) {
 
 if (redwoodAppElement.children?.length > 0) {
   hydrateRoot(
-    redwoodAppElement,
-    <App>
-      <Routes />
-    </App>
+    document,
+    <Document css={window.__assetMap?.()?.css}>
+      <App>
+        <Routes />
+      </App>
+    </Document>
   )
 } else {
-  const root = createRoot(redwoodAppElement)
+  const root = createRoot(document)
   root.render(
-    <App>
-      <Routes />
-    </App>
+    <Document css={window.__assetMap?.()?.css}>
+      <App>
+        <Routes />
+      </App>
+    </Document>
   )
 }

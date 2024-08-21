@@ -5,5 +5,11 @@
   "dependencies": {
     "@redwoodjs/api": "8.0.0-canary.1296",
     "@redwoodjs/graphql-server": "8.0.0-canary.1296"
+  },
+  "devDependencies": {
+    "@auth/core": "^0.34.2"
+  },
+  "peerDependencies": {
+    "@auth/core": "^0.34.2"
   }
 }

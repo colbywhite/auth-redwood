@@ -1,9 +1,11 @@
-import type {PropsWithChildren} from "react";
+import type { PropsWithChildren } from 'react'
 
-const RootLayout = ({children}: PropsWithChildren) => {
-  return <main className="bg-base-100 my-4 antialiased w-96 mx-auto prose flex flex-col gap-8 items-center">
-    {children}
-  </main>
+const RootLayout = ({ children }: PropsWithChildren) => {
+  return (
+    <main className="prose mx-auto my-4 flex w-96 flex-col items-center gap-8 bg-base-100 antialiased">
+      {children}
+    </main>
+  )
 }
 
 export default RootLayout

@@ -1,7 +1,8 @@
 {
   "scripts": {
     "start": "rw dev",
-    "db:init": "./scripts/local_db.sh"
+    "db:init": "./scripts/local_db.sh",
+    "lint:fix": "rw lint --fix"
   },
   "private": true,
   "workspaces": {

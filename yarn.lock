@@ -4434,6 +4434,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@redwoodjs/auth-custom-setup@npm:8.0.0-canary.1296":
+  version: 8.0.0-canary.1296
+  resolution: "@redwoodjs/auth-custom-setup@npm:8.0.0-canary.1296"
+  dependencies:
+    "@redwoodjs/cli-helpers": "npm:8.0.0-canary.1296"
+  checksum: 10c0/9981fc4017b60850bce1477fe6ea91e41ad47fea2250506f2a7c307927d1086cff55986fb725b5df4daa2ddacbedc29cc07da4f8195ef9f1a13e1088b929f6b2
+  languageName: node
+  linkType: hard
+
 "@redwoodjs/auth@npm:8.0.0-canary.1296, @redwoodjs/auth@npm:8.0.0-canary.1296+07fbc6900":
   version: 8.0.0-canary.1296
   resolution: "@redwoodjs/auth@npm:8.0.0-canary.1296"
@@ -15606,6 +15615,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
+    "@redwoodjs/auth-custom-setup": "npm:8.0.0-canary.1296"
     "@redwoodjs/core": "npm:8.0.0-canary.1296"
     "@redwoodjs/project-config": "npm:8.0.0-canary.1296"
     prettier-plugin-tailwindcss: "npm:^0.5.12"

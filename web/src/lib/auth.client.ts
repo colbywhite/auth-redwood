@@ -1,9 +1,14 @@
-import { useEffect, useState } from 'react'
-
 import type { BuiltInProviderType } from '@auth/core/providers'
 import type { Session } from '@auth/core/types'
 
-interface RedwoodLogInOptions {
+import type { CurrentUser } from '@redwoodjs/auth'
+
+const COMMON_HEADERS = {
+  'Content-Type': 'application/x-www-form-urlencoded',
+  'X-Auth-Return-Redirect': '1',
+}
+
+export interface RedwoodLogInOptions {
   /** The base path for authentication (default: /auth) */
   prefix?: string
   callbackUrl?: string
@@ -32,6 +37,13 @@ export async function login({
   providerId,
   authorizationParams,
 }: RedwoodLogInOptions) {
+  console.log('[auth][client][login]', {
+    prefix,
+    providerId,
+    authorizationParams,
+    redirect,
+    callbackUrl,
+  })
   const isCredentials = providerId === 'credentials'
   const isEmail = providerId === 'email'
   const isSupportingReturn = isCredentials || isEmail
@@ -40,13 +52,9 @@ export async function login({
   const _signInUrl = `${signInUrl}?${new URLSearchParams(authorizationParams)}`
 
   const csrfToken = await csrf(prefix)
-
   const res = await fetch(_signInUrl, {
     method: 'post',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'X-Auth-Return-Redirect': '1',
-    },
+    headers: COMMON_HEADERS,
     // @ts-expect-error -- ignore
     body: new URLSearchParams({
       redirect,
@@ -58,6 +66,7 @@ export async function login({
   const data = await res.clone().json()
   const error = new URL(data.url).searchParams.get('error')
 
+  // TODO: reload/redirect in a React-y way
   if (redirect || !isSupportingReturn || !error) {
     // TODO: Do not redirect for Credentials and Email providers by default in next major
     window.location.href = data.url ?? callbackUrl
@@ -69,14 +78,15 @@ export async function login({
   return res
 }
 
-async function logout(prefix = '/auth', callbackUrl = window.location.href) {
+export async function logout(
+  prefix = '/auth',
+  callbackUrl = window.location.href
+) {
+  console.log('[auth][client][logout]', { prefix, callbackUrl })
   const csrfToken = await csrf(prefix)
   const res = await fetch(`${prefix}/signout`, {
     method: 'post',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'X-Auth-Return-Redirect': '1',
-    },
+    headers: COMMON_HEADERS,
     body: new URLSearchParams({
       csrfToken,
       callbackUrl,
@@ -90,7 +100,7 @@ async function logout(prefix = '/auth', callbackUrl = window.location.href) {
   if (url.includes('#')) window.location.reload()
 }
 
-async function getSession(
+export async function getSession(
   prefix = '/auth',
   base = window.location.href
 ): Promise<Session | null> {
@@ -107,14 +117,19 @@ async function getSession(
   throw new Error(data.message)
 }
 
-export function useAuth() {
-  const [session, setSession] = useState<Session | null>(null)
-  useEffect(() => {
-    getSession().then(setSession)
-  }, [])
-  return {
-    login,
-    logout,
-    session,
-  }
+export async function getUser(prefix = '/auth', base = window.location.href) {
+  console.log('[auth][client][getUser]')
+  const session = await getSession(prefix, base)
+  return session?.user
+}
+
+/**
+ * This is the same as {@link getUser}, but typed to play nice with Redwood
+ */
+export async function getCurrentUser(
+  prefix = '/auth',
+  base = window.location.href
+) {
+  console.log('[auth][client][getCurrentUser]')
+  return (await getUser(prefix, base)) as CurrentUser
 }

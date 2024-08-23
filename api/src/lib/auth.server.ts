@@ -1,6 +1,7 @@
 import { Auth } from '@auth/core'
-import type { AuthAction, AuthConfig } from '@auth/core/types'
+import type { AuthAction, AuthConfig, Session } from '@auth/core/types'
 
+import type { CurrentUser } from '@redwoodjs/auth'
 import {
   type Middleware,
   type MiddlewareRequest,
@@ -48,6 +49,22 @@ export default function AuthMiddleware(
       )
       return MiddlewareResponse.fromResponse(response)
     }
+    const session = await getSession(request, resolvedConfig)
+    if (session && session.user) {
+      console.log('[auth][middleware]', 'set user', session.user)
+      request.serverAuthState.set({
+        currentUser: session.user as CurrentUser,
+        loading: false,
+        isAuthenticated: !!session,
+        hasError: false,
+        userMetadata: session.user,
+        cookieHeader: request.headers.get('Cookie'),
+        roles: [],
+      })
+    } else {
+      console.log('[auth][middleware]', 'clear user')
+      request.serverAuthState.clear()
+    }
     return originalResponse
   }
 
@@ -92,4 +109,31 @@ async function authRequestHandler(
   //   }
   // }
   return response
+}
+
+/**
+ * mimics a call to {@link authRequestHandler} for a session action
+ */
+async function getSession(
+  request: MiddlewareRequest,
+  config: ResolvedRedwoodAuthConfig
+): Promise<Session | null> {
+  const url = new URL(`${config.prefix}/session`, request.url)
+  const response = await authRequestHandler(
+    new Request(url, { headers: request.headers }),
+    null,
+    config
+  )
+  if (response === null) {
+    return null
+  }
+  const { status = 200 } = response
+
+  const data = await response.json()
+
+  if (!data || !Object.keys(data).length) return null
+  if (status === 200) {
+    return data ? (data as Session) : null
+  }
+  throw new Error(data.message)
 }

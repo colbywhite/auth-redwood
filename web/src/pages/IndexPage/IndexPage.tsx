@@ -1,27 +1,27 @@
 import { Metadata } from '@redwoodjs/web'
 
+import { useAuth } from 'src/auth'
 import RedwoodLogo from 'src/components/RedwoodLogo/RedwoodLogo'
-import { useAuth } from 'src/lib/auth.client'
 
 const IndexPage = () => {
-  const { session, login, logout } = useAuth()
+  const { logIn, logOut, userMetadata: user } = useAuth()
   return (
     <>
       <Metadata title="Index" description="Index page" />
 
       <RedwoodLogo className="w-1/2" />
-      {session?.user && <h1>Hello, {session.user.name}!</h1>}
-      {session ? (
+      {user && <h1>Hello, {user.name}!</h1>}
+      {user ? (
         <button
           className="btn btn-outline btn-primary"
-          onClick={() => logout()}
+          onClick={() => logOut()}
         >
           Log out
         </button>
       ) : (
         <button
           className="btn btn-outline btn-primary"
-          onClick={() => login({ providerId: 'github' })}
+          onClick={() => logIn({ providerId: 'github' })}
         >
           Log in
         </button>
